@@ -21,7 +21,7 @@ async def get_documents(query : str, doc_rep : DocumentRepositoryDep):
     return await documents_service.get_documents(query, doc_rep)
 
 
-@router.delete("/delete_document/{id}")
+@router.delete("/delete_document/{doc_id}")
 async def delete_document(doc_id : int, doc_rep : DocumentRepositoryDep):
     """
     Удаляет документ из БД и Индекса по полю id.

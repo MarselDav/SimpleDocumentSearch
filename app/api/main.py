@@ -3,7 +3,7 @@ from contextlib import contextmanager, asynccontextmanager
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from app.api.router.documents import router as documents_router
-from app.db.database import AsyncSessionFactory
+from app.db.database import AsyncSessionFactory, engine
 from app.db.repository.postgres_document_repository import PostgresDocumentRepository
 from app.db.repository.elastic_document_repository import ElasticsearchDocumentRepository
 from app.db.repository.document_repository import DocumentRepository
@@ -26,12 +26,14 @@ async def lifespan(app: FastAPI):
                     ELASTIC_PASSWORD)
     )
 
-    pg_rep = PostgresDocumentRepository(AsyncSessionFactory)
-    es_rep = ElasticsearchDocumentRepository(client)
-
-    app.state.doc_rep = DocumentRepository(pg_rep, es_rep)
-
-    yield
+    try:
+        pg_rep = PostgresDocumentRepository(AsyncSessionFactory)
+        es_rep = ElasticsearchDocumentRepository(client)
+        app.state.doc_rep = DocumentRepository(pg_rep, es_rep)
+        yield
+    finally:
+        await client.close()
+        await engine.dispose()
 
 
 app = FastAPI(

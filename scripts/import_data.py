@@ -98,4 +98,4 @@ async def import_data_elastic(df : pd.DataFrame) -> None:
 if __name__ == "__main__":
   dataframe = get_data_yandex_disk()
   asyncio.run(import_data_postgres(dataframe))
-  # asyncio.run(import_data_elastic(dataframe))
+  asyncio.run(import_data_elastic(dataframe))
