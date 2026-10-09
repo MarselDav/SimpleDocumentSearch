@@ -3,6 +3,7 @@ from sqlalchemy import ARRAY, String, Text, DateTime, Integer
 from datetime import datetime
 from .base import Base
 
+
 class DocumentORM(Base):
     __tablename__ = "document"
 

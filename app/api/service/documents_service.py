@@ -1,14 +1,8 @@
-from app.schemas.document import Document
-from datetime import datetime
-from app.db.database import AsyncSession
-from app.db.models.document import DocumentORM
-from sqlalchemy import select
+from app.db.repository.document_repository import DocumentRepository
+
+async def get_documents(query: str, doc_rep : DocumentRepository):
+    return await doc_rep.get_documents(query)
 
 
-async def get_documents(id: int, session: AsyncSession):
-    result = await session.execute(
-        select(DocumentORM)
-        .where(DocumentORM.id == id)
-    )
-
-    return result.scalar_one_or_none()
+async def delete_document(doc_id: int, doc_rep : DocumentRepository):
+    return await doc_rep.delete_document(doc_id)
