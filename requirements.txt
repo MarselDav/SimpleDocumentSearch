@@ -1,0 +1,15 @@
+
+elasticsearch
+fastapi
+python-dotenv
+sqlalchemy
+pydantic
+pandas
+requests
+uvicorn
+greenlet
+asyncpg
+alembic
+psycopg
+aiohttp
+psycopg[binary]
