@@ -1,4 +1,5 @@
-from sqlalchemy.exc import IntegrityError
+from asyncpg import UndefinedTableError
+from sqlalchemy.exc import IntegrityError, ProgrammingError
 
 from app.db.models.document import DocumentORM
 from sqlalchemy import select, delete, insert
@@ -30,7 +31,6 @@ class PostgresDocumentRepository:
                 .where(DocumentORM.id.in_(doc_ids))
                 .order_by(DocumentORM.created_date)
             )
-
             return [Document.model_validate(row) for row in result.scalars().all()]
 
     async def insert(self, document: Document) -> DocumentORM | None:

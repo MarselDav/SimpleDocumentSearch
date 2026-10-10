@@ -6,13 +6,14 @@ from app.db.database import get_session, AsyncSession
 from app.api.deps import get_doc_rep
 from app.db.repository.document_repository import DocumentRepository
 from app.db.repository.postgres_document_repository import PostgresDocumentRepository
+from app.schemas.document import Document, DeleteDocumentResult
 
 router = APIRouter()
 
 DocumentRepositoryDep = Annotated[DocumentRepository, Depends(get_doc_rep)]
 
 @router.get("/get_documents/")
-async def get_documents(query : str, doc_rep : DocumentRepositoryDep):
+async def get_documents(query : str, doc_rep : DocumentRepositoryDep) -> Document | None:
     """
     Принимает на вход произвольный текстовый запрос,
      ищет по тексту документа в Индексе и возвращает первые 20 документов
@@ -22,7 +23,8 @@ async def get_documents(query : str, doc_rep : DocumentRepositoryDep):
 
 
 @router.delete("/delete_document/{doc_id}")
-async def delete_document(doc_id : int, doc_rep : DocumentRepositoryDep):
+async def delete_document(doc_id : int, doc_rep : DocumentRepositoryDep) -> (
+        DeleteDocumentResult | None):
     """
     Удаляет документ из БД и Индекса по полю id.
     """

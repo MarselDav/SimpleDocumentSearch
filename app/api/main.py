@@ -26,6 +26,8 @@ async def lifespan(app: FastAPI):
                     ELASTIC_PASSWORD)
     )
 
+    print("[ELASTIC SEARCH PING]", await client.ping())
+
     try:
         pg_rep = PostgresDocumentRepository(AsyncSessionFactory)
         es_rep = ElasticsearchDocumentRepository(client)

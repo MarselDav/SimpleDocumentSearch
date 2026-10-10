@@ -9,3 +9,7 @@ class Document(BaseModel):
     text : str
     created_date : datetime
     rubrics: list[str]
+
+class DeleteDocumentResult(BaseModel):
+    elasticsearch_result : dict
+    postgres_result : bool
