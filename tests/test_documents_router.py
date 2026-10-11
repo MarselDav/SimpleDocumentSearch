@@ -3,16 +3,19 @@ import pytest
 from app.db.models.document import DocumentORM
 from sqlalchemy import select
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ["documents_data", "query", "expected_status_code", "expected_result"],
     [
+        # Проверка, что ничего не возвращает, когда нет документов
         (
             [],
             "Привет, это тестовый запрос",
             200,
             []
         ),
+        # Проверка, что возвращает правильный документ
         (
             [{"id" : 1,
               "text" : "Тестовый текст",
@@ -26,7 +29,25 @@ from sqlalchemy import select
               "created_date": '2019-07-25T12:42:13',
               "rubrics": ["vk-01", "vk-02"], },
              ],
+        ),
+        # Проверка, что возвращает максимум 20 и в правильном порядке по дате
+        (
+            [{"id" : i,
+              "text" : f"Тест {i}",
+              "created_date" : datetime(2019 + i, 7, 25, 12, 42, 13),
+                "rubrics": ["vk-01", "vk-02"],
+              } for i in range(25)
+             ],
+            "Тест",
+            200,
+            [{"id" : i,
+              "text" : f"Тест {i}",
+              "created_date" : f"{2019 + i}-07-25T12:42:13",
+                "rubrics": ["vk-01", "vk-02"],
+              } for i in range(19, -1, -1)
+             ],
         )
+
     ]
 )
 async def test_get_documents(
@@ -50,6 +71,7 @@ async def test_get_documents(
 @pytest.mark.parametrize(
     ["documents_data", "doc_id", "expected_status_code", "expected_result", "exist"],
     [
+        # Проверка, что удаляет правильный документ
         (
             [{"id" : 1,
               "text" : "Тестовый текст",
@@ -68,6 +90,7 @@ async def test_get_documents(
             },
             False
         ),
+        # Проверка, что вызывается правильная ошибка, если нет документа с таким id
         (
             [{"id": 1,
               "text": "Тестовый текст",
