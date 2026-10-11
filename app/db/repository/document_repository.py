@@ -1,7 +1,6 @@
-from app.db.models.document import DocumentORM
 from app.db.repository.elastic_document_repository import ElasticsearchDocumentRepository
 from app.db.repository.postgres_document_repository import PostgresDocumentRepository
-from app.schemas.document import Document, DeleteDocumentResult
+from app.schemas.document import Document, DeleteDocumentResult, ElasticResult
 
 
 class DocumentRepository:
@@ -21,7 +20,12 @@ class DocumentRepository:
         es_rep_result = await self._es_rep.delete_document(doc_id)
         pg_rep_result = await self._pg_rep.delete_by_id(doc_id)
 
+
         return DeleteDocumentResult(
-            elasticsearch_result=es_rep_result.body,
+                elasticsearch_result= ElasticResult(
+                index=es_rep_result.body.get("_index"),
+                id=es_rep_result.body.get("_id"),
+                result=es_rep_result.body.get("result")
+            ),
             postgres_result=pg_rep_result
         )

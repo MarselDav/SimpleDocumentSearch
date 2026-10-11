@@ -1,4 +1,3 @@
-from elastic_transport import ObjectApiResponse
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
@@ -11,6 +10,11 @@ class Document(BaseModel):
     created_date : datetime
     rubrics: list[str]
 
+class ElasticResult(BaseModel):
+    index : str
+    id : str
+    result : str
+
 class DeleteDocumentResult(BaseModel):
-    elasticsearch_result : dict
+    elasticsearch_result : ElasticResult
     postgres_result : bool
