@@ -14,7 +14,7 @@
    
    ELASTICSEARCH_URL=http://localhost:9200
    ELASTICSEARCH_USERNAME=elastic
-   ELASTIC_PASSWORD=__replace__"
+   ELASTIC_PASSWORD=__replace__
    ```
 
 2) Выполнить из корневой папки проекта:
