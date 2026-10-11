@@ -11,6 +11,16 @@ services:
       - "127.0.0.1:9200:9200"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS -u \"elastic:$${ELASTIC_PASSWORD}\" 'http://localhost:9200/_cluster/health' > /dev/null || exit 1"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
     restart: unless-stopped
 
   postgres:
@@ -21,7 +31,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
-      - "127.0.0.1:5433:5432"
+      - "127.0.0.1:5433:5433"
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
@@ -52,7 +62,7 @@ services:
       postgres:
         condition: service_healthy
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
