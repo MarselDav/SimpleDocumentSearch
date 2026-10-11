@@ -1,3 +1,4 @@
+from elastic_transport import ObjectApiResponse
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 

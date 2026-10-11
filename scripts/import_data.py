@@ -140,3 +140,12 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
+
+
+# async def main():
+#   dataframe = get_data_yandex_disk("https://disk.360.yandex.ru/d/UYooXd9q2yqTMQ")
+#   await import_data_postgres(dataframe)
+#   await import_data_elastic(dataframe)
+#
+# if __name__ == "__main__":
+#   asyncio.run(main())

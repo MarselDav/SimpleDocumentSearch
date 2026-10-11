@@ -16,7 +16,6 @@ ELASTICSEARCH_URL = os.environ["ELASTICSEARCH_URL"]
 ELASTICSEARCH_USERNAME = os.environ["ELASTICSEARCH_USERNAME"]
 ELASTIC_PASSWORD = os.environ["ELASTIC_PASSWORD"]
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     client = AsyncElasticsearch(

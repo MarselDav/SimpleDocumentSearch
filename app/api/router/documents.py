@@ -13,11 +13,11 @@ router = APIRouter()
 DocumentRepositoryDep = Annotated[DocumentRepository, Depends(get_doc_rep)]
 
 @router.get("/get_documents/")
-async def get_documents(query : str, doc_rep : DocumentRepositoryDep) -> Document | None:
+async def get_documents(query : str, doc_rep : DocumentRepositoryDep) -> list[Document] | None:
     """
     Принимает на вход произвольный текстовый запрос,
-     ищет по тексту документа в Индексе и возвращает первые 20 документов
-      со всем полями БД, упорядоченные по дате создания.
+     ищет по тексту документа в Индексе и возвращает первые 20 самых релевантных документов
+      со всем полями БД, упорядоченные по дате создания, по убыванию.
     """
     return await documents_service.get_documents(query, doc_rep)
 

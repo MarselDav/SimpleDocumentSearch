@@ -29,8 +29,9 @@ class PostgresDocumentRepository:
             result = await session.execute(
                 select(DocumentORM)
                 .where(DocumentORM.id.in_(doc_ids))
-                .order_by(DocumentORM.created_date)
+                .order_by(DocumentORM.created_date.desc())
             )
+
             return [Document.model_validate(row) for row in result.scalars().all()]
 
     async def insert(self, document: Document) -> DocumentORM | None:

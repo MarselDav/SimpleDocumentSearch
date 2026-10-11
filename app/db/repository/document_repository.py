@@ -22,6 +22,6 @@ class DocumentRepository:
         pg_rep_result = await self._pg_rep.delete_by_id(doc_id)
 
         return DeleteDocumentResult(
-            elasticsearch_result=es_rep_result,
+            elasticsearch_result=es_rep_result.body,
             postgres_result=pg_rep_result
         )
