@@ -10,7 +10,7 @@ router = APIRouter()
 
 DocumentRepositoryDep = Annotated[DocumentRepository, Depends(get_doc_rep)]
 
-@router.get("/get_documents/")
+@router.get("/documents/")
 async def get_documents(query : str, doc_rep : DocumentRepositoryDep) -> list[Document] | None:
     """
     Принимает на вход произвольный текстовый запрос,
@@ -20,7 +20,7 @@ async def get_documents(query : str, doc_rep : DocumentRepositoryDep) -> list[Do
     return await documents_service.get_documents(query, doc_rep)
 
 
-@router.delete("/delete_document/{doc_id}")
+@router.delete("/document/{doc_id}")
 async def delete_document(doc_id : int, doc_rep : DocumentRepositoryDep) -> (
         DeleteDocumentResult | None):
     """
