@@ -1,5 +1,4 @@
 from elasticsearch import AsyncElasticsearch
-
 from app.schemas.document import Document
 
 
@@ -15,7 +14,8 @@ class ElasticsearchDocumentRepository:
             document={
                 "id": document.id,
                 "text": document.text
-            }
+            },
+            refresh=True,
         )
 
     async def search(self, query: str, limit: int = 20):
@@ -32,5 +32,6 @@ class ElasticsearchDocumentRepository:
     async def delete_document(self, document_id):
         return await self._client.delete(
             index=self._index_name,
-            id=str(document_id)
+            id=str(document_id),
+            refresh=True,
         )

@@ -2,10 +2,8 @@ from fastapi import APIRouter
 from app.api.service import documents_service
 from fastapi import Depends
 from typing import Annotated
-from app.db.database import get_session, AsyncSession
 from app.api.deps import get_doc_rep
 from app.db.repository.document_repository import DocumentRepository
-from app.db.repository.postgres_document_repository import PostgresDocumentRepository
 from app.schemas.document import Document, DeleteDocumentResult
 
 router = APIRouter()

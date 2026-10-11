@@ -1,5 +1,4 @@
-from asyncpg import UndefinedTableError
-from sqlalchemy.exc import IntegrityError, ProgrammingError
+from sqlalchemy.exc import IntegrityError
 
 from app.db.models.document import DocumentORM
 from sqlalchemy import select, delete, insert

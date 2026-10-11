@@ -1,4 +1,4 @@
-from contextlib import contextmanager, asynccontextmanager
+from contextlib import asynccontextmanager
 
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI

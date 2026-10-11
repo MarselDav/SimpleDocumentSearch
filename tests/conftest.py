@@ -2,17 +2,14 @@ from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
-from httpx2 import ASGITransport
+from httpx2 import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sympy import refine
 
 from app.api.deps import get_doc_rep
 from app.api.main import app
 from elasticsearch import AsyncElasticsearch
 from dotenv import load_dotenv
 import os
-from httpx import ASGITransport, AsyncClient
 
 from sqlalchemy import insert, delete
 from app.db.models.document import DocumentORM
