@@ -7,22 +7,16 @@ from app.db.database import AsyncSessionFactory, engine
 from app.db.repository.postgres_document_repository import PostgresDocumentRepository
 from app.db.repository.elastic_document_repository import ElasticsearchDocumentRepository
 from app.db.repository.document_repository import DocumentRepository
-import os
-from dotenv import load_dotenv
+from app.config.settings import settings
 
-load_dotenv()
-
-ELASTICSEARCH_URL = os.environ["ELASTICSEARCH_URL"]
-ELASTICSEARCH_USERNAME = os.environ["ELASTICSEARCH_USERNAME"]
-ELASTIC_PASSWORD = os.environ["ELASTIC_PASSWORD"]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     client = AsyncElasticsearch(
-            ELASTICSEARCH_URL,
+            settings.elasticsearch_url,
             basic_auth=(
-                    ELASTICSEARCH_USERNAME,
-                    ELASTIC_PASSWORD)
+                    settings.elasticsearch_username,
+                    settings.elastic_password.get_secret_value())
     )
 
     print("[ELASTIC SEARCH PING]", await client.ping())

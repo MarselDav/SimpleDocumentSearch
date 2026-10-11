@@ -9,8 +9,7 @@ from sqlalchemy import delete, insert
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 import asyncio
-import os
-from dotenv import load_dotenv
+from app.config.settings import settings
 
 import argparse
 
@@ -41,13 +40,6 @@ API_URL = (
     f'https://cloud-api.yandex.net/v1/disk/public/resources/download'
 )
 
-load_dotenv()
-
-ELASTICSEARCH_URL = os.environ["ELASTICSEARCH_URL"]
-ELASTICSEARCH_USERNAME = os.environ["ELASTICSEARCH_USERNAME"]
-ELASTIC_PASSWORD = os.environ["ELASTIC_PASSWORD"]
-
-INDEX_NAME = "documents"
 
 def get_data_yandex_disk(url : str) -> pd.DataFrame:
   response = requests.get(
@@ -88,27 +80,27 @@ async def import_data_elastic(df : pd.DataFrame) -> None:
     return
 
   records = [
-  { "_index": INDEX_NAME,
+  { "_index": settings.index_name,
     "_id":str(i),
     "_source": {"id" : i, "text": row["text"]}
   } for i, row in df.iterrows()]
 
   async with AsyncElasticsearch(
-          ELASTICSEARCH_URL,
+          settings.elasticsearch_url,
           basic_auth=(
-              ELASTICSEARCH_USERNAME,
-              ELASTIC_PASSWORD
+              settings.elasticsearch_username,
+              settings.elastic_password.get_secret_value()
           )
   ) as client:
     print("[Elasticsearch] Подключение: ", await client.ping())
 
-    exists = await client.indices.exists(index=INDEX_NAME)
+    exists = await client.indices.exists(index=settings.index_name)
 
     if exists:
-      await client.indices.delete(index=INDEX_NAME)
+      await client.indices.delete(index=settings.index_name)
 
     await client.indices.create(
-      index=INDEX_NAME,
+      index=settings.index_name,
       mappings={
         "properties": {
           "id": {"type": "long"},
@@ -124,7 +116,7 @@ async def import_data_elastic(df : pd.DataFrame) -> None:
     print(f"[Elasticsearch] Успешно добавлено документов: {success}")
     print(f"[Elasticsearch] Ошибок при добавлении: {failed}")
 
-    await client.indices.refresh(index=INDEX_NAME)
+    await client.indices.refresh(index=settings.index_name)
 
 
 async def main():
@@ -140,12 +132,3 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
-
-
-# async def main():
-#   dataframe = get_data_yandex_disk("https://disk.360.yandex.ru/d/UYooXd9q2yqTMQ")
-#   await import_data_postgres(dataframe)
-#   await import_data_elastic(dataframe)
-#
-# if __name__ == "__main__":
-#   asyncio.run(main())

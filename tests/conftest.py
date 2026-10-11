@@ -8,8 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from app.api.deps import get_doc_rep
 from app.api.main import app
 from elasticsearch import AsyncElasticsearch
-from dotenv import load_dotenv
-import os
 
 from sqlalchemy import insert, delete
 from app.db.models.document import DocumentORM
@@ -20,31 +18,26 @@ from app.db.repository.postgres_document_repository import PostgresDocumentRepos
 
 from elasticsearch.helpers import async_bulk
 
-load_dotenv()
+from app.config.settings import settings
 
-ELASTICSEARCH_URL = os.environ["ELASTICSEARCH_URL"]
-ELASTICSEARCH_USERNAME = os.environ["ELASTICSEARCH_USERNAME"]
-ELASTIC_PASSWORD = os.environ["ELASTIC_PASSWORD"]
-INDEX_NAME = "test_document"
 
 @pytest_asyncio.fixture
 async def test_es_client() \
         -> AsyncGenerator[AsyncElasticsearch, None]:
 
     async with AsyncElasticsearch(
-        ELASTICSEARCH_URL,
+        settings.elasticsearch_url,
         basic_auth=(
-                ELASTICSEARCH_USERNAME,
-                ELASTIC_PASSWORD
+                settings.elasticsearch_username,
+                settings.elastic_password.get_secret_value()
         )
     ) as client:
 
-        if await client.indices.exists(index=INDEX_NAME):
-            await client.indices.delete(index=INDEX_NAME)
-
+        if await client.indices.exists(index=settings.test_index_name):
+            await client.indices.delete(index=settings.test_index_name)
 
         await client.indices.create(
-            index=INDEX_NAME,
+            index=settings.test_index_name,
             mappings={
                 "properties": {
                     "id": {"type": "long"},
@@ -56,18 +49,15 @@ async def test_es_client() \
         try:
             yield client
         finally:
-            if await client.indices.exists(index=INDEX_NAME):
-                await client.indices.delete(index=INDEX_NAME)
+            if await client.indices.exists(index=settings.test_index_name):
+                await client.indices.delete(index=settings.test_index_name)
 
 @pytest_asyncio.fixture
 async def test_pg_session_factory():
-    user = os.environ["POSTGRES_USER"]
-    password = os.environ["POSTGRES_PASSWORD"]
-    host = os.environ["POSTGRES_HOST"]
-    port = os.environ["POSTGRES_PORT"]
-    # dbname = "test_document"
-
-    test_database_url = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/test_document"
+    test_database_url = \
+        (f"postgresql+asyncpg://{settings.postgres_user}:"
+         f"{settings.postgres_password.get_secret_value()}@"
+         f"{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_test_db}")
 
     test_engine = create_async_engine(
         test_database_url,
@@ -93,7 +83,7 @@ async def test_pg_session_factory():
 @pytest.fixture
 def test_get_doc_rep(test_es_client, test_pg_session_factory):
     pg_rep = PostgresDocumentRepository(test_pg_session_factory)
-    es_rep = ElasticsearchDocumentRepository(test_es_client, INDEX_NAME)
+    es_rep = ElasticsearchDocumentRepository(test_es_client, settings.test_index_name)
 
     return DocumentRepository(pg_rep, es_rep)
 
@@ -124,7 +114,7 @@ async def seed_documents(test_es_client, test_pg_session_factory):
 
         if documents_data:
             records = [
-                {"_index": INDEX_NAME,
+                {"_index": settings.test_index_name,
                  "_id": str(document["id"]),
                  "_source": {"id": document["id"], "text": document["text"]}
                  } for document in documents_data]
@@ -135,6 +125,6 @@ async def seed_documents(test_es_client, test_pg_session_factory):
                 raise_on_error=False
             )
 
-            await test_es_client.indices.refresh(index=INDEX_NAME)
+            await test_es_client.indices.refresh(index=settings.test_index_name)
         return documents_data
     return _seed

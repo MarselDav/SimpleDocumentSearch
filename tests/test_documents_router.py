@@ -2,6 +2,7 @@ from datetime import datetime
 import pytest
 from app.db.models.document import DocumentORM
 from sqlalchemy import select
+from app.config.settings import settings
 
 
 @pytest.mark.asyncio
@@ -60,7 +61,7 @@ async def test_get_documents(
     await seed_documents(documents_data)
 
     response = await test_client.get(
-        '/get_documents/',
+        '/documents/',
         params={"query": query}
     )
 
@@ -82,7 +83,7 @@ async def test_get_documents(
             200,
             {
                 'elasticsearch_result': {
-                    'index': 'test_document',
+                    'index': settings.test_index_name,
                     'id': '1',
                     'result': 'deleted',
                     },
@@ -121,7 +122,7 @@ async def test_delete_document(
     await seed_documents(documents_data)
 
     response = await test_client.delete(
-        f'/delete_document/{doc_id}'
+        f'/document/{doc_id}'
     )
 
     assert response.status_code == expected_status_code
@@ -139,7 +140,7 @@ async def test_delete_document(
 
     # Проверяем что действительно произошло в Elasticsearch
     exists = await test_es_client.exists(
-        index="test_document",
+        index=settings.test_index_name,
         id=str(doc_id),
     )
     assert exists.body is exist

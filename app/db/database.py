@@ -1,20 +1,14 @@
-import os
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from dotenv import load_dotenv
+from app.config.settings import settings
 
-load_dotenv()
 
-user = os.environ["POSTGRES_USER"]
-password = os.environ["POSTGRES_PASSWORD"]
-host = os.environ["POSTGRES_HOST"]
-port = os.environ["POSTGRES_PORT"]
-dbname = os.environ["POSTGRES_DB"]
-
-DATABASE_URL = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{dbname}"
+DATABASE_URL = (f"postgresql+asyncpg://{settings.postgres_user}:"
+                f"{settings.postgres_password.get_secret_value()}@{settings.postgres_host}:"
+                f"{settings.postgres_port}/{settings.postgres_db}")
 
 engine = create_async_engine(
     DATABASE_URL,
-    echo=True,
+    echo=False,
 )
 
 AsyncSessionFactory = async_sessionmaker(
