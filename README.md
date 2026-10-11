@@ -3,7 +3,7 @@
 
 #### Туториал по запуску через docker:
 
-1) Открыть файл *.env.example* и замените поля, со значениями  *__replace__*, сохраните как *.env*
+1) Открыть файл __.env.example__ и заменить поля, со значениями  __replace__, сохранить как __.env__
 
    ```dotenv
    POSTGRES_HOST=localhost
@@ -29,7 +29,7 @@
     ```commandline
     docker compose run --rm api python -m scripts.import_data --url url --target all
     ```
-    Здесь ``--url`` это ссылка на *.csv* файл на яндекс диске и ``--target`` это то, куда будут загружены данные (можно выбрать один из ресурсов: postgres, elasticsearch или все: all ) 
+    Здесь ``--url`` это ссылка на *.csv* файл на яндекс диске, ``--target`` - это то, куда будут загружены данные (можно выбрать один из ресурсов: __postgres__, __elasticsearch__ или все: __all__) 
     
     ##### Используйте:
     ```commandline
@@ -42,25 +42,18 @@
 
 ### Вы хотите запустить тесты?
 Тесты выполняются в тестовой БД и в тестовом Индексе, тестовой индекс создастся автоматически, тестовую БД PostgreSQL нужно создать:
-1) Запустить PostgreSQL
+1) Запустить PostgreSQL и создать тестовую БД *test_documents*
 
     ```commandline
-    docker compose exec postgres psql -U postgres
+    docker compose exec postgres sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE DATABASE test_document;"'
     ```
-2) Создать БД test_document
-    ```commandline
-    CREATE DATABASE test_document;
-    ```
-   Выйти:
-    ```commandline
-    \q
-   ```
-3) Применить миграции alembic для тестовой БД:
+
+2) Применить миграции alembic для тестовой БД:
     ```commandline
     docker compose exec -e POSTGRES_DB=test_document api alembic upgrade head
     ```
 
-4) Выполнить тесты
+3) Выполнить тесты
     ```commandline
     docker compose exec api pytest tests -v
     ```
