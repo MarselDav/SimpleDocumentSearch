@@ -41,16 +41,17 @@
 5) После выполнения команд, сервисы должны успешно запуститься, можно открыть документацию: http://127.0.0.1:8000/docs
 
 ### Вы хотите запустить тесты?
-Тесты выполняются в тестовой БД и в тестовом Индексе, тестовой индекс создастся автоматически, тестовую БД PostgreSQL нужно создать:
+Тесты выполняются в тестовой БД и в тестовом Индексе, тестовой индекс создаётся автоматически, тестовую БД PostgreSQL нужно создать:
 1) Запустить PostgreSQL и создать тестовую БД *test_documents*
 
     ```commandline
-    docker compose exec postgres sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE DATABASE test_document;"'
+   docker compose exec postgres psql -U postgres -d documents -c "CREATE DATABASE test_documents;"
     ```
+   Где ``postgres`` - ваше фактическое **POSTGRES_USER** в __.env__ файле
 
 2) Применить миграции alembic для тестовой БД:
     ```commandline
-    docker compose exec -e POSTGRES_DB=test_document api alembic upgrade head
+    docker compose exec -e POSTGRES_DB=test_documents api alembic upgrade head
     ```
 
 3) Выполнить тесты
