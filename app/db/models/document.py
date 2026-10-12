@@ -5,7 +5,7 @@ from .base import Base
 
 
 class DocumentORM(Base):
-    __tablename__ = "document"
+    __tablename__ = "documents"
 
     id : Mapped[int] = mapped_column(
         primary_key=True,

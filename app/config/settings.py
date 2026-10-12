@@ -20,8 +20,8 @@ class Settings(BaseSettings):
     elasticsearch_username : str
     elastic_password : SecretStr
 
-    table_name : str = "document"
-    postgres_test_db: str = "test_document"
+    table_name : str = "documents"
+    postgres_test_db: str = "test_documents"
 
     index_name : str = "documents"
     test_index_name : str = "test_documents"
